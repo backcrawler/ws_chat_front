@@ -4,15 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Anon Chat</title>
-     <script src="{{ url_for('static', path='/js/source.js') }}"></script>
+     <script src="{{ url_for('static', path='/js/source.js') }}?v=4"></script>
 </head>
 
 <body>
     <h1>WebSocket Chat</h1>
-    <form action="" onsubmit="sendMessage()">
-        <input type="text" id="messageText" autocomplete="off"/>
-        <button>Send</button>
-    </form>
+    <input type="text" id="messageText" autocomplete="off"/>
+    <button onclick="sendMessage(event)">Send</button>
     <ul id='messages'>
     </ul>
 </body>
