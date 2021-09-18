@@ -1,55 +1,71 @@
-let ws;
-let wsClosed = true;
-deltaPoll();
+const anonUser = {
+    wsClosed: true,
+    ws: null,
+    chId: null
+}
 
-function sendMessage(event) {
-    initConnection();
-    // if (!ws || wsClosed) {
-    //     console.log('here')
-    //     await initConnection();
-    //     createWS();
-    // }
-    // console.log('here2')
-    // const input = document.getElementById("messageText")
-    // ws.send(JSON.stringify({val: input.value}))
-    // input.value = ''
+
+async function sendMessage(event) {
     event.preventDefault();
+    const response = await fetch('http://127.0.0.1:8000/message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)  // todo: msg data
+    })
+    const json = await response.json();
+    if (json.result !== 'ok') {
+        console.log('ERR WHILE SENDING MSG:', json);
+    }
 }
 
 
 function createWS() {
-    ws = new WebSocket("ws://127.0.0.1:8000/ws");
-    wsClosed = false;
-    ws.onmessage = function(event) {
-        const messages = document.getElementById('messages');
-        const message = document.createElement('li');
-        const content = document.createTextNode(event.data);
-        message.appendChild(content);
-        messages.appendChild(message);
+    anonUser.ws = new WebSocket("ws://127.0.0.1:8000/ws");
+    anonUser.wsClosed = false;
+    anonUser.ws.onmessage = function(event) {
+        addNewMessage(event.data);
     }
-    ws.onclose = function (event) {
-        wsClosed = true;
+    anonUser.ws.onclose = function (event) {
+        anonUser.wsClosed = true;
     }
 }
 
 
-async function initConnection() {
-    const r = await fetch("http://127.0.0.1:8000/init");
-    console.log(await r.json());
-    console.log(document.cookie);
-    const r2 = await fetch("http://127.0.0.1:8000/test");
-    console.log(await r2.json());
+function addNewMessage(data) {
+    const messages = document.getElementById('messages');
+    const message = document.createElement('li');
+    const content = document.createTextNode(data);
+    message.appendChild(content);
+    messages.appendChild(message);
+}
 
+
+async function initConnection() {
+    const r = await fetch("http://127.0.0.1:8000/init", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({'name': 'Anon'})  // todo: name choice
+    });
+    console.log(await r.json());
+    console.log('COOKIE:', document.cookie);
 }
 
 
 function deltaPoll(chId) {
     let pollInterval = 0;
+    let reinit = true;
     fetch(`http://127.0.0.1:8000/delta?ch_id=${chId}`)
         .then((r) => {
             if (r.status !== 200) {
-                console.log('GOT WRONG STATUS:', r.status);
                 pollInterval = 1000;
+                console.log('GOT WRONG STATUS:', r.status);
+                if (r.status === 401) {
+                    reinit = false;
+                }
             } else {
                 r.json()
                     .then((json) => {
@@ -66,8 +82,10 @@ function deltaPoll(chId) {
             pollInterval = 1000;
         })
         .finally(() => {
-            console.log('REINIT');
-            setTimeout(() => deltaPoll(chId), pollInterval)
+            if (reinit) {
+                console.log('REINIT');
+                setTimeout(() => deltaPoll(chId), pollInterval)
+            }
         })
 }
 
@@ -91,3 +109,5 @@ async function fetchWithTimeout(resource, options = {}) {
 
   return response;
 }
+
+initConnection();
