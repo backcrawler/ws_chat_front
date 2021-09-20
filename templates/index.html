@@ -4,15 +4,60 @@
 <head>
     <meta charset="UTF-8">
     <title>Anon Chat</title>
-     <script src="{{ url_for('static', path='/js/source.js') }}?v=4"></script>
+    <link rel="stylesheet" href="{{ url_for('static', path='/styles/base.css') }}">
+    <script defer src="{{ url_for('static', path='/js/source.js') }}?v=4"></script>
 </head>
 
 <body>
-    <h1>WebSocket Chat</h1>
-    <input type="text" id="messageText" autocomplete="off"/>
-    <button onclick="sendMessage(event)">Send</button>
-    <ul id='messages'>
-    </ul>
+
+    <main class="entry-content">
+        <h1>Anon Chat v0.1</h1>
+        <div id="chat-frame">
+        </div>
+        <table style="border: none;">
+            <tbody>
+                <tr>
+                    <td style="border: none; vertical-align: middle;">
+                        <span style="word-wrap: normal; text-wrap: none; white-space: nowrap; -moz-hyphens: none;">
+                            <b id="self-name-placeholder" style="color:#457b2d"></b>:
+                        </span>
+                    </td>
+                    <td style="width:100%; border: none; vertical-align: middle;">
+                        <input id="message-text" type="text" maxlength="200" style="width:100%" autocomplete="off" onkeydown="connectionController.onKeyDownForMessage(event)">
+                    </td>
+                    <td style="border: none; vertical-align: middle;">
+                        <button id="send-msg-button" onclick="connectionController.sendMessage(event)">Send</button>
+                    </td>
+                </tr>
+            <tr>
+                <td>
+                    <button onclick="connectionController.startChat(event)">Start Chat</button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="new-name-input">Choose your name:</label>
+                    <input id="new-name-input" type="text" style="width:100%">
+                    <button onclick="connectionController.nameChange(event)">Change</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </main>
+
+
 </body>
+
+<div data-template="message-info" style="display: none">
+    [<span class="message-time"></span>]
+    <span class="message-author"><b></b></span>:
+    <span class="message-text"></span>
+</div>
+
+<div data-template="message-basic" style="display: none">
+    [<span class="message-time"></span>]
+    <span class="message-author"><b></b></span>:
+    <span class="message-text"></span>
+</div>
 
 </html>

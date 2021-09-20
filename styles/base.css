@@ -1,0 +1,31 @@
+#chat-frame {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+    color: #2b2b2b;
+    overflow-y: scroll;
+    padding:4px;
+    resize: vertical;
+    height: 15rem;
+}
+
+#send-msg-button {
+    background: orange;
+    margin-left: 2%;
+}
+
+.entry-content {
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 720px;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 200;
+    line-height: 3rem;
+    font-family: "PT Serif",Georgia,"Times New Roman",serif;
+    margin: 2rem 0 1rem 0;
+    color: #2b2b2b;
+    /* text-transform: uppercase; */
+}
